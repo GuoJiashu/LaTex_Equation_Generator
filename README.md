@@ -1,1 +1,1 @@
-# Latex_equations_generator
+# LaTex_Equations_Generator
