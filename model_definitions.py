@@ -1,14 +1,11 @@
-import os
 import math
 import numpy as np
 from PIL import Image, ImageOps
 import pickle
-from sklearn.metrics import confusion_matrix
 
 import torch
 import torch.nn as nn
 from torchvision.models import resnet18
-from sklearn.model_selection import train_test_split
 
 # === 加载词表 ===
 with open("token_dicts/token2idx.pkl", "rb") as f:

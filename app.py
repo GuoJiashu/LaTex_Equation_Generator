@@ -39,7 +39,7 @@ st.set_page_config(page_title="🧠 LaTeX Generator", layout="wide")
 st.title("🖋️ 手写公式转 LaTeX Demo")
 st.write("上传一张手写公式图像, AI 将自动生成对应的 LaTeX 表达式。")
 
-uploaded_file = st.file_uploader("上传图像(支持 .bmp / .png / .jpg)", type=["bmp", "png", "jpg"])
+uploaded_file = st.file_uploader("上传图像（支持 .bmp / .png / .jpg）", type=["bmp", "png", "jpg"])
 
 if uploaded_file:
     image = Image.open(uploaded_file).convert("L")
