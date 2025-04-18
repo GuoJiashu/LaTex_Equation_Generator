@@ -1,4 +1,4 @@
-# LaTex_Equations_Generator
+# LaTex Equations Generator
 
 # 🖋️ Handwritten LaTeX Recognition (Im2LaTeX)
 
@@ -15,7 +15,4 @@
 - `beam_search_decode.py` ：Beam Search 解码器推理
 - `analysis_tools.py` ：生成混淆矩阵、错误分析、Top混淆对查找
 - `export_results.py` ：推理结果导出CSV、绘图保存
-
-（实际是放在一个大Notebook或者.py里，但可以这么模块化理解✨）
-
 ---
