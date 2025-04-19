@@ -5,7 +5,7 @@ import pickle
 
 import torch
 import torch.nn as nn
-from torchvision.models import resnet18
+from torchvision.models import resnet34
 
 # === 加载词表 ===
 with open("token_dicts/token2idx.pkl", "rb") as f:
@@ -53,8 +53,7 @@ class PositionalEncoding2D(nn.Module):
 class Encoder(nn.Module):
     def __init__(self, d_model=256):
         super().__init__()
-        # Use ResNet18 up to layer3 (output: [B, 128, H, W])
-        base_cnn = resnet18(pretrained=True)
+        base_cnn = resnet34(pretrained=True)
         self.backbone = nn.Sequential(*list(base_cnn.children())[:6])  # conv1 + bn1 + relu + maxpool + layer1, layer2
 
         self.project = nn.Conv2d(128, d_model, kernel_size=1)  # map channels to d_model
@@ -83,7 +82,7 @@ class Encoder(nn.Module):
         return feat  # [B, H, W, D]
 
 class Decoder(nn.Module):
-    def __init__(self, vocab_size, d_model=256, nhead=4, num_layers=4, max_len=256, dropout=0.1):
+    def __init__(self, vocab_size, d_model=256, nhead=8, num_layers=8, max_len=256, dropout=0.1):
         super().__init__()
         self.token_embedding = nn.Embedding(vocab_size, d_model)
         self.pos_embedding = nn.Parameter(torch.zeros(1, max_len * 2, d_model))
@@ -136,16 +135,17 @@ def generate_square_subsequent_mask(sz: int) -> torch.Tensor:
     return mask
 
 # === Beam Search 解码函数 ===
-def beam_search_decode(model, image, token2idx, idx2token, beam_width=3, max_len=256):
+def beam_search_decode(model, image, token2idx, idx2token, beam_width=3, max_len=256, device="cuda", length_penalty_alpha=0.6):
     model.eval()
-    device = next(model.parameters()).device
-    image = image.unsqueeze(0).to(device)
-    
-    with torch.no_grad():
-        memory = model.encoder(image)
-        memory = memory.expand(beam_width, *memory.shape[1:])  # [beam, H, W, D]
 
-        sequences = [[token2idx['<s>']]]
+    if not image.is_cuda:
+        image = image.to(device)
+
+    with torch.no_grad():
+        memory = model.encoder(image.unsqueeze(0))
+        memory = memory.expand(beam_width, *memory.shape[1:])
+
+        sequences = [[token2idx['<s>']] for _ in range(beam_width)]
         scores = torch.zeros(beam_width, device=device)
         completed = []
 
@@ -153,13 +153,15 @@ def beam_search_decode(model, image, token2idx, idx2token, beam_width=3, max_len
             all_candidates = []
             for i, seq in enumerate(sequences):
                 if len(seq) > 1 and seq[-1] == token2idx['</s>']:
-                    completed.append((seq, scores[i].item()))
+                    # ➡️ 这里加 Length Penalty 归一化分数
+                    length_penalty = (len(seq)) ** length_penalty_alpha
+                    completed.append((seq, scores[i].item() / length_penalty))
                     continue
 
                 tgt_input = torch.tensor(seq, dtype=torch.long, device=device).unsqueeze(0)
                 tgt_mask = generate_square_subsequent_mask(tgt_input.size(1)).to(device)
                 output = model.decoder(tgt_input, memory[i:i+1], tgt_mask)
-                probs = torch.log_softmax(output[0, -1], dim=-1)  # log-probs
+                probs = torch.log_softmax(output[0, -1], dim=-1)
 
                 topk_probs, topk_idx = torch.topk(probs, beam_width)
                 for j in range(beam_width):
@@ -167,21 +169,32 @@ def beam_search_decode(model, image, token2idx, idx2token, beam_width=3, max_len
                     score = scores[i] + topk_probs[j]
                     all_candidates.append((candidate, score))
 
-            # Top beam_width 继续扩展
+            # 选最好的 beam_width 个序列
             all_candidates = sorted(all_candidates, key=lambda x: x[1], reverse=True)[:beam_width]
             sequences = [cand[0] for cand in all_candidates]
             scores = torch.tensor([cand[1] for cand in all_candidates], device=device)
 
-        completed += list(zip(sequences, scores.tolist()))
+        # 最后把未完成的序列也加进去
+        for i, seq in enumerate(sequences):
+            length_penalty = (len(seq)) ** length_penalty_alpha
+            completed.append((seq, scores[i].item() / length_penalty))
+
         completed = sorted(completed, key=lambda x: x[1], reverse=True)
 
         best_seq = completed[0][0]
         return [idx2token[idx] for idx in best_seq[1:-1] if idx in idx2token]
 
 
+
 # === 图像预处理函数 ===
-def preprocess_image(image_path, target_size=(464, 85)):
+def preprocess_image(image_path, target_size=(512, 128), auto_invert=True):
     img = Image.open(image_path).convert('L')
+
+    if auto_invert:
+        mean_pixel = np.array(img).mean()
+        if mean_pixel > 127:  # 平均像素亮度，大概中间值
+            img = ImageOps.invert(img)  # 🔥 只对亮图做反转
+
     img.thumbnail(target_size, Image.Resampling.LANCZOS)
 
     delta_w = target_size[0] - img.size[0]

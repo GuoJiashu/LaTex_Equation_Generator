@@ -39,7 +39,7 @@ st.set_page_config(page_title="🧠 LaTeX Generator", layout="wide")
 st.title("🖋️ 手写公式转 LaTeX Demo")
 st.write("上传一张手写公式图像, AI 将自动生成对应的 LaTeX 表达式。")
 
-uploaded_file = st.file_uploader("上传图像（支持 .bmp / .png / .jpg）", type=["bmp", "png", "jpg"])
+uploaded_file = st.file_uploader("上传图像(支持 .bmp / .png / .jpg)", type=["bmp", "png", "jpg"])
 
 if uploaded_file:
     image = Image.open(uploaded_file).convert("L")
@@ -47,14 +47,16 @@ if uploaded_file:
 
     with st.spinner("🧠 模型正在识别中，请稍候..."):
         model = load_model()
-        input_tensor = preprocess_image(uploaded_file).to("cuda")
+        input_tensor = preprocess_image(uploaded_file, auto_invert=True).to("cuda")
 
         tokens = beam_search_decode(
             model=model,
             image=input_tensor,
             token2idx=token2idx,
             idx2token=idx2token,
-            beam_width=3
+            beam_width=3,
+            device="cuda",
+            length_penalty_alpha=0.6,
         )
 
         # 清洗特殊 token
