@@ -26,6 +26,11 @@ LaTeX-OCR is a deep learning pipeline for recognizing and converting images of h
 
 ---
 
+## Tips
+If the codes are not running well, use the codes from LaTex_Equation_Generator.ipynb to run and test the code.
+
+---
+
 ## 🛠 Installation
 
 1. Clone the repository:
