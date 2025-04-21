@@ -24,7 +24,7 @@ def train_one_epoch(model, dataloader, optimizer, scheduler, loss_fn, device):
 
         optimizer.zero_grad()
         logits = model(images, tgt_input, tgt_mask)
-        loss = loss_fn(logits.view(-1, logits.size(-1)), tgt_output.view(-1))
+        loss = loss_fn(logits.reshape(-1, logits.size(-1)), tgt_output.reshape(-1))
 
         loss.backward()
         optimizer.step()
@@ -47,7 +47,7 @@ def evaluate(model, dataloader, loss_fn, device):
         tgt_mask = generate_square_subsequent_mask(tgt_input.size(1)).to(device)
 
         logits = model(images, tgt_input, tgt_mask)
-        loss = loss_fn(logits.view(-1, logits.size(-1)), tgt_output.view(-1))
+        loss = loss_fn(logits.reshape(-1, logits.size(-1)), tgt_output.reshape(-1))
 
         total_loss += loss.item()
 
