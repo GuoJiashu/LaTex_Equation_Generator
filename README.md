@@ -1,18 +1,35 @@
-# LaTex Equations Generator
+# LaTeX-OCR
 
-# 🖋️ Handwritten LaTeX Recognition (Im2LaTeX)
-
-基于 PyTorch 实现的完整手写公式识别系统，支持数据预处理、模型训练、推理评估、错误分析、混淆矩阵可视化等一系列功能。
+Handwritten Mathematical Formula Recognition using CNN + Transformer Architecture.  
+This project converts images of handwritten LaTeX equations into machine-readable LaTeX code.
 
 ---
 
-## 📦 项目结构
+## 📚 Project Overview
 
-- `dataset_preprocessing.py` ：图像与Latex公式的处理、编码
-- `model.py` ：Encoder-Decoder 结构，带 Positional Encoding 和 Transformer Decoder
-- `train.py` ：训练、验证、测试流程封装
-- `evaluate.py` ：支持 Token-level、Sentence-level、Edit Distance、多种评估指标
-- `beam_search_decode.py` ：Beam Search 解码器推理
-- `analysis_tools.py` ：生成混淆矩阵、错误分析、Top混淆对查找
-- `export_results.py` ：推理结果导出CSV、绘图保存
+LaTeX-OCR is a deep learning pipeline for recognizing and converting images of handwritten mathematical expressions into LaTeX code. It uses:
+
+- **Encoder**: ResNet34 backbone with 2D positional encoding and row-wise LSTM.
+- **Decoder**: Transformer Decoder architecture.
+- **Training**: Label smoothing loss, warm-up and cosine annealing scheduler.
+- **Inference**: Beam Search decoding for sequence generation.
+
 ---
+
+## 🚀 Features
+
+- Supports handwritten mathematical formulas.
+- Augmented training (random rotation, color jitter).
+- Beam Search decoding for higher prediction accuracy.
+- Token-level accuracy, Normalized Edit Distance (NED), and BLEU score evaluation.
+- Visualization tools (loss curves, feature maps, confusion matrix).
+
+---
+
+## 🛠 Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/GuoJiashu/LaTex_Equation_Generator
+cd latex-ocr
