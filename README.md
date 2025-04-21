@@ -33,8 +33,12 @@ If the codes are not running well, use the codes from LaTex_Equation_Generator.i
 
 ## 🛠 Installation
 
-1. Clone the repository:
+Clone the repository:
 
 ```bash
 git clone https://github.com/GuoJiashu/LaTex_Equation_Generator
 cd LaTeX_OCR
+```
+Or
+
+Run the .ipynb file
