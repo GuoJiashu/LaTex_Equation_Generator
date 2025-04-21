@@ -1,0 +1,4 @@
+Beam Search Accuracy (exact match): 71.98%
+Token-level accuracy: 81.44%
+Normalized Edit Distance (NED): 91.86%
+Average BLEU Score: 84.75%
