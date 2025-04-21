@@ -6,9 +6,9 @@ This project converts images of handwritten LaTeX equations into machine-readabl
 ---
 
 ## 📹 Demo
-<img src="demo/demo.gif" alt="Image to Latex streamlit app" width="512">
+<img src="demo/demo.gif" alt="Image to Latex streamlit app" width="600">
 
-<img src="demo/demo2.gif" alt="Image to Latex streamlit app" width="512">
+<img src="demo/demo2.gif" alt="Image to Latex streamlit app" width="600">
 
 ---
 
