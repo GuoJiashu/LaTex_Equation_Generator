@@ -32,4 +32,4 @@ LaTeX-OCR is a deep learning pipeline for recognizing and converting images of h
 
 ```bash
 git clone https://github.com/GuoJiashu/LaTex_Equation_Generator
-cd latex-ocr
+cd LaTeX_OCR
