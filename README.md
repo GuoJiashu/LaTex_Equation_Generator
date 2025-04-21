@@ -5,6 +5,11 @@ This project converts images of handwritten LaTeX equations into machine-readabl
 
 ---
 
+## 📹 Demo
+![Model Demo](assets/demo.gif)
+
+---
+
 ## 📚 Project Overview
 
 LaTeX-OCR is a deep learning pipeline for recognizing and converting images of handwritten mathematical expressions into LaTeX code. It uses:
