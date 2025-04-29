@@ -1,6 +1,6 @@
 # LaTeX-OCR
 
-Handwritten Mathematical Formula Recognition using CNN + Transformer Architecture.  
+Handwritten Mathematical Formula Recognition using ResNet34 + Transformer Architecture.  
 This project converts images of handwritten LaTeX equations into machine-readable LaTeX code.
 
 ---
